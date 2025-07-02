@@ -91,6 +91,10 @@ public class LayoutHelper {
         return new FrameLayout.LayoutParams(getSize(width), getSize(height));
     }
 
+    public static FrameLayout.LayoutParams createFrame(int width, float height, int gravity) {
+        return new FrameLayout.LayoutParams(getSize(width), getSize(height), gravity);
+    }
+
     public static FrameLayout.LayoutParams createFrame(float width, float height, int gravity) {
         return new FrameLayout.LayoutParams(getSize(width), getSize(height), gravity);
     }
