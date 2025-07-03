@@ -81,6 +81,7 @@ import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.DisplayCutout;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -111,9 +112,11 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.math.MathUtils;
+import androidx.core.view.DisplayCutoutCompat;
 import androidx.core.view.NestedScrollingParent3;
 import androidx.core.view.NestedScrollingParentHelper;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DiffUtil;
@@ -324,6 +327,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     public static final int TOP_PROFILE_AVATAR_HEIGHT = AndroidUtilities.dp(128f);
     public static final int PLAY_PROFILE_ANIMATION_UNKNOWN_STATE = 2;
     public static final float AVATAR_SIZE = 72f;
+    public static final float COLLAPSED_STATE_NAME_LEFT_OFFSET = dpf2(64f);
 
     private RecyclerListView listView;
     private RecyclerListView searchListView;
@@ -772,7 +776,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     };
     private boolean fragmentOpened;
     private NestedFrameLayout contentView;
-    private float titleAnimationsYDiff;
     private float customAvatarProgress;
     private float customPhotoOffset;
     private boolean hasFallbackPhoto;
@@ -7576,6 +7579,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 // Collapse animation
                 avatarScale = ((AVATAR_SIZE + 18) * diff) / AVATAR_SIZE;
                 avatarY = AndroidUtilities.lerp(0, ((actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0) + AndroidUtilities.dpf2(12)), diff);
+                final DisplayCutoutCompat cutout = WindowInsetsCompat.CONSUMED.getDisplayCutout();
+
                 if (storyView != null) {
                     storyView.invalidate();
                 }
@@ -7597,10 +7602,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     starFgItem.setTranslationY(avatarContainer.getY() + AndroidUtilities.dp(24) + extra);
                 }
                 final float centerOfAvatarContainer = avatarContainer.getX() + (float) avatarContainer.getWidth() / 2;
-                nameX = AndroidUtilities.lerp(dpf2(52f), centerOfAvatarContainer - (nameTextView[1].getTextWidth() + (animatedStatusView != null ? dpf2(30) : 0)) / 2, diff);
-                nameY = (float) Math.max(Math.floor(avatarY + dpf2(AVATAR_SIZE * avatarScale)), (actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0)) + AndroidUtilities.dp(2f) + AndroidUtilities.dp(7) * diff + titleAnimationsYDiff * (1f - avatarAnimationProgress);
-                onlineX = AndroidUtilities.lerp(dpf2(50f), centerOfAvatarContainer - ((float) onlineTextView[1].getTextWidth() / 2), diff);
-                onlineY = (float) Math.max(Math.floor(avatarY + dpf2(AVATAR_SIZE * avatarScale)), (actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0)) + AndroidUtilities.dp(26) + (float) Math.floor(11 * AndroidUtilities.density) * diff;
+                nameX = AndroidUtilities.lerp(COLLAPSED_STATE_NAME_LEFT_OFFSET, centerOfAvatarContainer - (nameTextView[1].getTextWidth() + (animatedStatusView != null ? dpf2(30) : 0)) / 2, diff);
+                nameY = (float) Math.max(Math.floor(avatarY + dpf2(AVATAR_SIZE * avatarScale)), (actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0)) + AndroidUtilities.dp(6f) + AndroidUtilities.dp(7) * diff;
+                onlineX = AndroidUtilities.lerp(COLLAPSED_STATE_NAME_LEFT_OFFSET - dpf2(2f), centerOfAvatarContainer - ((float) onlineTextView[1].getTextWidth() / 2), diff);
+                onlineY = (float) Math.max(Math.floor(avatarY + dpf2(AVATAR_SIZE * avatarScale)), (actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0)) + AndroidUtilities.dp(30) + AndroidUtilities.dp2(11) * diff;
                 if (showStatusButton != null) {
                     showStatusButton.setAlpha((int) (0xFF * diff));
                 }
