@@ -15,7 +15,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.MessagesController;
@@ -30,7 +29,6 @@ import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AnimatedFloat;
 import org.telegram.ui.Components.ButtonBounce;
 import org.telegram.ui.Components.CubicBezierInterpolator;
-import org.telegram.ui.ProfileActivity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,19 +38,14 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
     private final int currentAccount;
     private final long dialogId;
     private final View avatarContainer;
-    private final ProfileActivity.AvatarImageView avatarImage;
-    private final Theme.ResourcesProvider resourcesProvider;
 
-    public ProfileGiftsView(Context context, int currentAccount, long dialogId, @NonNull View avatarContainer, ProfileActivity.AvatarImageView avatarImage, Theme.ResourcesProvider resourcesProvider) {
+    public ProfileGiftsView(Context context, int currentAccount, long dialogId, @NonNull View avatarContainer) {
         super(context);
 
         this.currentAccount = currentAccount;
         this.dialogId = dialogId;
 
         this.avatarContainer = avatarContainer;
-        this.avatarImage = avatarImage;
-
-        this.resourcesProvider = resourcesProvider;
 
     }
 
@@ -66,18 +59,13 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
 
     private float actionBarProgress;
     public void setActionBarActionMode(float progress) {
-//        if (Theme.isCurrentThemeDark()) {
-//            return;
-//        }
         actionBarProgress = progress;
         invalidate();
     }
 
 
     private float left, right, cy;
-    private float expandRight, expandY;
-    private boolean expandRightPad;
-    private final AnimatedFloat expandRightPadAnimated = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
+    private float expandY;
     private final AnimatedFloat rightAnimated = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
 
     public void setBounds(float left, float right, float cy, boolean animated) {
@@ -94,8 +82,6 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
     }
 
     public void setExpandCoords(float right, boolean rightPadded, float y) {
-        this.expandRight = right;
-        this.expandRightPad = rightPadded;
         this.expandY = y;
         invalidate();
     }
@@ -317,8 +303,6 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
         if (changed)
             invalidate();
     }
-
-    public final AnimatedFloat animatedCount = new AnimatedFloat(this, 0, 320, CubicBezierInterpolator.EASE_OUT_QUINT);
 
     @Override
     protected void dispatchDraw(@NonNull Canvas canvas) {
