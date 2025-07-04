@@ -125,6 +125,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.exoplayer2.util.Log;
+
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
@@ -1554,45 +1556,46 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         @Override
         public void onNestedPreScroll(View target, int dx, int dy, int[] consumed, int type) {
-            if (target == listView && sharedMediaRow != -1 && sharedMediaLayoutAttached) {
-                boolean searchVisible = actionBar.isSearchFieldVisible();
-                int t = sharedMediaLayout.getTop();
-                if (dy < 0) {
-                    boolean scrolledInner = false;
-                    if (t <= 0) {
-                        RecyclerListView innerListView = sharedMediaLayout.getCurrentListView();
-                        if (innerListView != null) {
-                            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) innerListView.getLayoutManager();
-                            int pos = linearLayoutManager.findFirstVisibleItemPosition();
-                            if (pos != RecyclerView.NO_POSITION) {
-                                RecyclerView.ViewHolder holder = innerListView.findViewHolderForAdapterPosition(pos);
-                                int top = holder != null ? holder.itemView.getTop() : -1;
-                                int paddingTop = innerListView.getPaddingTop();
-                                if (top != paddingTop || pos != 0) {
-                                    consumed[1] = pos != 0 ? dy : Math.max(dy, (top - paddingTop));
-                                    innerListView.scrollBy(0, dy);
-                                    scrolledInner = true;
-                                }
+            if (!(target == listView && sharedMediaRow != -1 && sharedMediaLayoutAttached)) {
+                return;
+            }
+            boolean searchVisible = actionBar.isSearchFieldVisible();
+            int t = sharedMediaLayout.getTop();
+            if (dy < 0) {
+                boolean scrolledInner = false;
+                if (t <= 0) {
+                    RecyclerListView innerListView = sharedMediaLayout.getCurrentListView();
+                    if (innerListView != null) {
+                        LinearLayoutManager linearLayoutManager = (LinearLayoutManager) innerListView.getLayoutManager();
+                        int pos = linearLayoutManager.findFirstVisibleItemPosition();
+                        if (pos != RecyclerView.NO_POSITION) {
+                            RecyclerView.ViewHolder holder = innerListView.findViewHolderForAdapterPosition(pos);
+                            int top = holder != null ? holder.itemView.getTop() : -1;
+                            int paddingTop = innerListView.getPaddingTop();
+                            if (top != paddingTop || pos != 0) {
+                                consumed[1] = pos != 0 ? dy : Math.max(dy, (top - paddingTop));
+                                innerListView.scrollBy(0, dy);
+                                scrolledInner = true;
                             }
                         }
                     }
-                    if (searchVisible) {
-                        if (!scrolledInner && t < 0) {
-                            consumed[1] = dy - Math.max(t, dy);
-                        } else {
-                            consumed[1] = dy;
-                        }
-                    }
-                } else {
-                    if (searchVisible) {
-                        RecyclerListView innerListView = sharedMediaLayout.getCurrentListView();
+                }
+                if (searchVisible) {
+                    if (!scrolledInner && t < 0) {
+                        consumed[1] = dy - Math.max(t, dy);
+                    } else {
                         consumed[1] = dy;
-                        if (t > 0) {
-                            consumed[1] -= dy;
-                        }
-                        if (innerListView != null && consumed[1] > 0) {
-                            innerListView.scrollBy(0, consumed[1]);
-                        }
+                    }
+                }
+            } else {
+                if (searchVisible) {
+                    RecyclerListView innerListView = sharedMediaLayout.getCurrentListView();
+                    consumed[1] = dy;
+                    if (t > 0) {
+                        consumed[1] -= dy;
+                    }
+                    if (innerListView != null && consumed[1] > 0) {
+                        innerListView.scrollBy(0, consumed[1]);
                     }
                 }
             }
@@ -3722,17 +3725,47 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 final boolean result = super.onTouchEvent(e);
                 if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-                    if (allowPullingDown) {
-                        final View view = layoutManager.findViewByPosition(0);
-                        if (view != null) {
-                            if (isPulledDown) {
-                                final int actionBarHeight = ActionBar.getCurrentActionBarHeight() + (actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0);
-                                listView.smoothScrollBy(0, view.getTop() - listView.getMeasuredWidth() + actionBarHeight, CubicBezierInterpolator.EASE_OUT_QUINT);
-                            } else {
-                                listView.smoothScrollBy(0, view.getTop() - TOP_PROFILE_AVATAR_HEIGHT, CubicBezierInterpolator.EASE_OUT_QUINT);
-                            }
+                    final View view = layoutManager.findViewByPosition(0);
+                    if (view != null) {
+                        final int actionBarHeight = ActionBar.getCurrentActionBarHeight() + (actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0);
+
+                        // Define the three target scroll points
+                        final int targetCollapsed = 0;
+                        final int targetAvatarHeight = TOP_PROFILE_AVATAR_HEIGHT;
+                        final int targetFullExpand = listView.getMeasuredWidth() - actionBarHeight; // Assuming this is the full expansion point relative to the list's top
+
+                        int scrollTarget;
+                        int top = view.getTop();
+
+                        // Determine the scroll target based on current extraHeight and thresholds
+                        if (top <= targetAvatarHeight * 0.66f) { // If less than 33% of TOP_PROFILE_AVATAR_HEIGHT
+                            scrollTarget = targetCollapsed; // Snap to collapsed (0)
+                        } else if (top > targetAvatarHeight * 0.66f && top < targetAvatarHeight * 1.66f) { // Between 33% of TOP_PROFILE_AVATAR_HEIGHT and 50% of full expand
+                            scrollTarget = targetAvatarHeight; // Snap to TOP_PROFILE_AVATAR_HEIGHT
+                        } else { // Greater than or equal to 50% of full expand (or similar logic for the third point)
+                            scrollTarget = targetFullExpand; // Snap to full expansion
                         }
+
+                        Log.d("onTouchEvent", "Scroll target: " + scrollTarget + " top: " + top);
+
+                        // Calculate the amount to scroll by from the current position of the view
+                        // Note: view.getTop() is relative to its parent (listView in this case)
+                        // If listView.getScrollY() represents the current scroll offset,
+                        // then the amount to scroll is (target - currentScrollY)
+                        // Assuming view.getTop() represents the current desired scroll position based on content,
+                        // we need to scroll such that view.getTop() becomes scrollTarget.
+                        int scrollByAmount = view.getTop() - scrollTarget;
+
+                        // Invert the scrollByAmount if view.getTop() decreases as you scroll down
+                        // For example, if scrolling down makes view.getTop() more negative (moves up)
+                        // you might need to adjust the sign.
+                        // Based on your original code's `view.getTop() - listView.getMeasuredWidth() + actionBarHeight`,
+                        // it seems `view.getTop()` becomes smaller (more negative) as the list scrolls up.
+                        // So, `view.getTop() - target` would give the correct signed difference.
+
+                        listView.smoothScrollBy(0, scrollByAmount, CubicBezierInterpolator.EASE_OUT_QUINT);
                     }
+
                 }
                 return result;
             }
@@ -7279,7 +7312,14 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
             listView.setTopGlowOffset((int) extraHeight);
 
-            listView.setOverScrollMode(extraHeight > TOP_PROFILE_AVATAR_HEIGHT && extraHeight < listView.getMeasuredWidth() - newTop ? View.OVER_SCROLL_NEVER : View.OVER_SCROLL_ALWAYS);
+            int overScrollMode = View.OVER_SCROLL_ALWAYS;
+            if (extraHeight > TOP_PROFILE_AVATAR_HEIGHT && extraHeight < listView.getMeasuredWidth() - newTop) {
+                overScrollMode = View.OVER_SCROLL_NEVER;
+            }
+            if (TOP_PROFILE_AVATAR_HEIGHT - extraHeight < dp(8)) {
+                overScrollMode = View.OVER_SCROLL_NEVER;
+            }
+            listView.setOverScrollMode(overScrollMode);
 
             if (writeButton != null) {
                 writeButton.setTranslationY((actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0) + ActionBar.getCurrentActionBarHeight() + extraHeight + searchTransitionOffset - AndroidUtilities.dp(29.5f));
@@ -7360,9 +7400,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
             float h = openAnimationInProgress ? initialAnimationExtraHeight : extraHeight;
             if (h > TOP_PROFILE_AVATAR_HEIGHT || isPulledDown) {
-                final float maxDeltaHight = (listView.getMeasuredWidth() - newTop - TOP_PROFILE_AVATAR_HEIGHT);
+                final float expandedDeltaHeight = (listView.getMeasuredWidth() - newTop - TOP_PROFILE_AVATAR_HEIGHT);
                 final float deltaHeight = (h - TOP_PROFILE_AVATAR_HEIGHT);
-                expandProgress = Math.max(0f, Math.min(1f, deltaHeight / maxDeltaHight));
+                expandProgress = Math.max(0f, Math.min(1f, deltaHeight / expandedDeltaHeight));
                 avatarScale = AndroidUtilities.lerp((AVATAR_SIZE + 18f) / AVATAR_SIZE, (AVATAR_SIZE + AVATAR_SIZE + 18f) / AVATAR_SIZE, Math.min(1f, expandProgress * 3f));
                 if (storyView != null) {
                     storyView.invalidate();
