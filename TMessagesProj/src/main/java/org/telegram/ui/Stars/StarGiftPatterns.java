@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.ui.ActionBar.Theme;
 
 public class StarGiftPatterns {
 
@@ -206,6 +205,49 @@ public class StarGiftPatterns {
             );
             pattern.setAlpha((int) (0xFF * alpha * thisAlpha));
             pattern.draw(canvas);
+        }
+    }
+
+    private static final float[][] profileEmojiBackgroundPattern = new float[][] {
+            // angle, radius, scale, alpha
+            {4, 72f, 26f, .24f},
+
+            {6, 112f, 22f, .17f},
+    };
+
+    public static void drawProfileTopViewPattern(
+            Canvas canvas,
+            Drawable pattern,
+            float w, float h, float alpha,
+            float progress
+        ) {
+        if (alpha <= 0.0f) return;
+
+        final float l = 0;
+
+        final float centerX = l + (w / 2);
+        final float centerY = h / 2;
+
+        if (progress > 0) {
+            for (final float[] currentPattern : profileEmojiBackgroundPattern) {
+                final float radius = currentPattern[1] * progress;
+                final float size = currentPattern[2];
+                final float fractions = currentPattern[0];
+                pattern.setAlpha((int) (0xFF * alpha * currentPattern[3]));
+
+                for (float a = 0; a < 2 * Math.PI; a += (float) (Math.PI / fractions)) {
+                    final float x = (float) Math.sin(a) * radius;
+                    final float y = (float) Math.cos(a) * radius;
+
+                    pattern.setBounds(
+                            (int) (centerX + dpf2(x) - dpf2(size) / 2.0f),
+                            (int) (centerY + dpf2(y) - dpf2(size) / 2.0f),
+                            (int) (centerX + dpf2(x) + dpf2(size) / 2.0f),
+                            (int) (centerY + dpf2(y) + dpf2(size) / 2.0f)
+                    );
+                    pattern.draw(canvas);
+                }
+            }
         }
     }
 
