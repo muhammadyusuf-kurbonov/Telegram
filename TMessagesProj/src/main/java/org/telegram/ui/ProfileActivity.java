@@ -3219,7 +3219,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
             @Override
             protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
-                if (pinchToZoomHelper.isInOverlayMode() && (child == avatarContainer2 || child == actionBar || child == writeButton)) {
+                if (pinchToZoomHelper.isInOverlayMode() && (child == avatarContainer2 || child == actionBar)) {
                     return true;
                 }
                 if (child == blurredView) {
@@ -3550,6 +3550,37 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         final LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
         buttonParams.leftMargin = dp(4f);
         buttonParams.rightMargin = dp(4f);
+
+        String btnText;
+        if (userId != 0) {
+            if (imageUpdater != null) {
+//                cameraDrawable = new RLottieDrawable(R.raw.camera_outline, String.valueOf(R.raw.camera_outline), AndroidUtilities.dp(56), AndroidUtilities.dp(56), false, null);
+//                cellCameraDrawable = new RLottieDrawable(R.raw.camera_outline, R.raw.camera_outline + "_cell", AndroidUtilities.dp(42), AndroidUtilities.dp(42), false, null);
+
+//                writeButton.setAnimation(cameraDrawable);
+                btnText = LocaleController.getString(R.string.AccDescrChangeProfilePicture);
+            } else {
+                btnText = LocaleController.getString(R.string.Message);
+            }
+        } else {
+            btnText = LocaleController.getString(R.string.ViewDiscussion);
+        }
+        writeButton = new ProfileActionButton(
+                context,
+                AppCompatResources.getDrawable(context, R.drawable.message),
+                btnText,
+                resourcesProvider
+        );
+        profileActionButtonsBar.addView(
+                writeButton,
+                buttonParams
+        );
+        writeButton.setOnClickListener(v -> {
+            if (writeButton.getTag() != null) {
+                return;
+            }
+            onWriteButtonClick();
+        });
 
         if (chatId != 0) {
             callItem = new ProfileActionButton(
@@ -5343,41 +5374,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         );
         updateProfileData(true);
 
-        String btnText;
 
-        if (userId != 0) {
-            if (imageUpdater != null) {
-//                cameraDrawable = new RLottieDrawable(R.raw.camera_outline, String.valueOf(R.raw.camera_outline), AndroidUtilities.dp(56), AndroidUtilities.dp(56), false, null);
-//                cellCameraDrawable = new RLottieDrawable(R.raw.camera_outline, R.raw.camera_outline + "_cell", AndroidUtilities.dp(42), AndroidUtilities.dp(42), false, null);
 
-//                writeButton.setAnimation(cameraDrawable);
-                btnText = LocaleController.getString(R.string.AccDescrChangeProfilePicture);
-            } else {
-                btnText = LocaleController.getString(R.string.AccDescrOpenChat);
-            }
-        } else {
-            btnText = LocaleController.getString(R.string.ViewDiscussion);
-        }
-        writeButton = new ProfileActionButton(
-                context,
-                AppCompatResources.getDrawable(context, R.drawable.message),
-                btnText,
-                resourcesProvider
-        );
-        profileActionButtonsBar.addView(
-                writeButton,
-                new LinearLayout.LayoutParams(
-                        0,
-                        0,
-                        1f
-                )
-        );
-        writeButton.setOnClickListener(v -> {
-            if (writeButton.getTag() != null) {
-                return;
-            }
-            onWriteButtonClick();
-        });
         needLayout(false);
 
         listView.setOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -8673,12 +8671,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 ArrayList<Animator> animators = new ArrayList<>();
                 animators.add(ObjectAnimator.ofFloat(this, "avatarAnimationProgress", 0.0f, 1.0f));
                 if (writeButton != null && writeButton.getTag() == null) {
-                    writeButton.setScaleX(0.2f);
-                    writeButton.setScaleY(0.2f);
-                    writeButton.setAlpha(0.0f);
-                    animators.add(ObjectAnimator.ofFloat(writeButton, View.SCALE_X, 1.0f));
-                    animators.add(ObjectAnimator.ofFloat(writeButton, View.SCALE_Y, 1.0f));
-                    animators.add(ObjectAnimator.ofFloat(writeButton, View.ALPHA, 1.0f));
+//                    writeButton.setScaleX(0.2f);
+//                    writeButton.setScaleY(0.2f);
+//                    writeButton.setAlpha(0.0f);
+//                    animators.add(ObjectAnimator.ofFloat(writeButton, View.SCALE_X, 1.0f));
+//                    animators.add(ObjectAnimator.ofFloat(writeButton, View.SCALE_Y, 1.0f));
+//                    animators.add(ObjectAnimator.ofFloat(writeButton, View.ALPHA, 1.0f));
                 }
                 if (playProfileAnimation == 2) {
                     avatarColor = getAverageColor(avatarImage.getImageReceiver());
@@ -8778,9 +8776,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 ArrayList<Animator> animators = new ArrayList<>();
                 animators.add(ObjectAnimator.ofFloat(this, "avatarAnimationProgress", 1.0f, 0.0f));
                 if (writeButton != null) {
-                    animators.add(ObjectAnimator.ofFloat(writeButton, View.SCALE_X, 0.2f));
-                    animators.add(ObjectAnimator.ofFloat(writeButton, View.SCALE_Y, 0.2f));
-                    animators.add(ObjectAnimator.ofFloat(writeButton, View.ALPHA, 0.0f));
+//                    animators.add(ObjectAnimator.ofFloat(writeButton, View.SCALE_X, 0.2f));
+//                    animators.add(ObjectAnimator.ofFloat(writeButton, View.SCALE_Y, 0.2f));
+//                    animators.add(ObjectAnimator.ofFloat(writeButton, View.ALPHA, 0.0f));
                 }
                 for (int a = 0; a < 2; a++) {
                     animators.add(ObjectAnimator.ofFloat(nameTextView[a], View.ALPHA, a == 0 ? 1.0f : 0.0f));
