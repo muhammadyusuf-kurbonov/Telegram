@@ -5006,6 +5006,10 @@ public class AndroidUtilities {
         return (float) Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
     }
 
+    public static float easeOutQuad(float t) {
+        return 1 - (1 - t) * (1 - t);
+    }
+
     public static int lerp(int a, int b, float f) {
         return (int) (a + f * (b - a));
     }

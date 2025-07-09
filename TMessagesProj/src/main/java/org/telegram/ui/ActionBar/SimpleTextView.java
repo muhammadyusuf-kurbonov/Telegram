@@ -63,7 +63,6 @@ public class SimpleTextView extends View implements Drawable.Callback {
     private int gravity = Gravity.LEFT | Gravity.TOP;
     private int maxLines = 1;
     private CharSequence text;
-    private SpannableStringBuilder spannableStringBuilder;
     private Drawable leftDrawable;
     private Drawable rightDrawable;
     private Drawable rightDrawable2;
@@ -380,9 +379,7 @@ public class SimpleTextView extends View implements Drawable.Callback {
         rightDrawableHidden = false;
         if (text != null) {
             try {
-                int leftDrawableWidth = 0;
                 if (leftDrawable != null && !leftDrawableOutside) {
-                    leftDrawableWidth += leftDrawable.getIntrinsicWidth() + drawablePadding;
                     width -= leftDrawable.getIntrinsicWidth();
                     width -= drawablePadding;
                 }
