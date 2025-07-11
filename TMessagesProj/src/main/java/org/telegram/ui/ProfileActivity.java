@@ -161,7 +161,7 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.NotificationsController;
-import org.telegram.messenger.R;
+import org.telegram.kurbonov_messenger.R;
 import org.telegram.messenger.SendMessagesHelper;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.SvgHelper;
@@ -1696,12 +1696,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         if (editItemVisible) {
                             editItem.setVisibility(GONE);
                         }
-                        if (callItemVisible) {
-//                            callItem.setVisibility(GONE);
-                        }
-                        if (videoCallItemVisible) {
-                            videoCallItem.setVisibility(GONE);
-                        }
                     } else {
                         setVisibility(GONE);
                     }
@@ -1715,12 +1709,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                     if (editItemVisible) {
                         editItem.setVisibility(VISIBLE);
-                    }
-                    if (callItemVisible) {
-                        callItem.setVisibility(VISIBLE);
-                    }
-                    if (videoCallItemVisible) {
-                        videoCallItem.setVisibility(VISIBLE);
                     }
                     setVisibility(VISIBLE);
                     updateStoriesViewBounds(false);
@@ -3429,7 +3417,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 avatarContainer2.setPivotX(avatarContainer2.getMeasuredWidth() / 2f);
                 AndroidUtilities.updateViewVisibilityAnimated(avatarContainer2, !expanded, 0.95f, true);
 
-//                callItem.setVisibility(expanded || !callItemVisible ? GONE : INVISIBLE);
+                callItem.setVisibility(expanded || !callItemVisible ? GONE : INVISIBLE);
                 editItem.setVisibility(expanded || !editItemVisible ? GONE : INVISIBLE);
                 otherItem.setVisibility(expanded ? GONE : INVISIBLE);
                 if (qrItem != null) {
@@ -3629,7 +3617,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         leaveItem = new ProfileActionButton(
                 context,
                 AppCompatResources.getDrawable(context, R.drawable.leave),
-                LocaleController.getString(R.string.LeaveChats),
+                LocaleController.formatString(R.string.LeaveChats, ""),
                 resourcesProvider
         );
         leaveItem.setOnClickListener(view -> {
@@ -3640,13 +3628,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 buttonParams
         );
         leaveItem.setVisibility(GONE);
-
-        final TextView testView = new TextView(context);
-        testView.setText("TEST MEE");
-        testView.setBackgroundColor(Color.BLUE);
-//        profileActionButtonsBar.addView(testView, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-
-        Log.d("ButtonBar", "Button bar buttons: " + profileActionButtonsBar.getChildCount());
         // endregion
 
 
@@ -7118,12 +7099,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             public void onAnimationEnd(Animator animation) {
                 if (headerAnimatorSet != null) {
                     if (mediaHeaderVisible) {
-                        if (callItemVisible) {
-//                            callItem.setVisibility(GONE);
-                        }
-                        if (videoCallItemVisible) {
-                            videoCallItem.setVisibility(GONE);
-                        }
                         if (editItemVisible) {
                             editItem.setVisibility(GONE);
                         }
@@ -7364,7 +7339,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         if (avatarContainer != null) {
             final float diff = Math.min(1f, avatarExtraHeight / TOP_PROFILE_AVATAR_HEIGHT);
 
-            listView.setTopGlowOffset((int) avatarExtraHeight);
+            listView.setTopGlowOffset((int) avatarExtraHeight + TOP_PROFILE_ACTION_BUTTON_BAR_HEIGHT);
 
             int overScrollMode = View.OVER_SCROLL_ALWAYS;
             if (avatarExtraHeight > TOP_PROFILE_AVATAR_HEIGHT && avatarExtraHeight < listView.getMeasuredWidth() - newTop) {
@@ -10735,7 +10710,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                 } else {
                     if (callItem.getVisibility() != GONE) {
-//                        callItem.setVisibility(GONE);
+                        callItem.setVisibility(GONE);
                     }
                 }
             }
@@ -10776,7 +10751,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     editItem.setAlpha(1f);
                 }
                 if (callItemVisible) {
-//                    callItem.setVisibility(GONE);
+                    callItem.setVisibility(GONE);
                     callItem.animate().cancel();
                     callItem.setAlpha(1f);
                 }

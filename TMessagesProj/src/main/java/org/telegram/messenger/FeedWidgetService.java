@@ -16,6 +16,7 @@ import android.widget.RemoteViewsService;
 
 import androidx.core.content.FileProvider;
 
+import org.telegram.kurbonov_messenger.R;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 

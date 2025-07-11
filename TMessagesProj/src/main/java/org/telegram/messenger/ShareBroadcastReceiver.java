@@ -12,6 +12,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import org.telegram.kurbonov_messenger.R;
+
 public class ShareBroadcastReceiver extends BroadcastReceiver {
 
     @Override

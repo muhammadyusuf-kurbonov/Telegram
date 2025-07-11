@@ -28,6 +28,8 @@ import androidx.annotation.RequiresApi;
 import androidx.core.content.pm.ShortcutManagerCompat;
 
 import org.json.JSONObject;
+import org.telegram.kurbonov_messenger.BuildConfig;
+import org.telegram.kurbonov_messenger.R;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLRPC;

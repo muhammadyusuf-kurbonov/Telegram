@@ -14,6 +14,8 @@ import android.os.Build;
 
 import com.android.billingclient.api.ProductDetails;
 
+import org.telegram.kurbonov_messenger.BuildConfig;
+
 import java.util.Objects;
 
 public class BuildVars {
@@ -79,7 +81,7 @@ public class BuildVars {
     private static Boolean betaApp;
     public static boolean isBetaApp() {
         if (betaApp == null) {
-            betaApp = ApplicationLoader.applicationContext != null && "org.telegram.messenger.beta".equals(ApplicationLoader.applicationContext.getPackageName());
+            betaApp = ApplicationLoader.applicationContext != null && "org.telegram.kurbonov_messenger.beta".equals(ApplicationLoader.applicationContext.getPackageName());
         }
         return betaApp;
     }

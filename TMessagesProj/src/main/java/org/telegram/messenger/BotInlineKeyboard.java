@@ -3,6 +3,7 @@ package org.telegram.messenger;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
+import org.telegram.kurbonov_messenger.R;
 import org.telegram.tgnet.TLRPC;
 
 import java.util.ArrayList;

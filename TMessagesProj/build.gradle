@@ -203,9 +203,8 @@ android {
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
         }
     }
-    namespace 'org.telegram.messenger'
+    namespace APP_PACKAGE
 }
-
 
 def getProps(String propName) {
     def propsFile = rootProject.file('local.properties')
