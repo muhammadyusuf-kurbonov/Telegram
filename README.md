@@ -1,3 +1,20 @@
+## Submission of Muhammadyusuf Kurbonov to Telegram Android Contest 2025 R1
+
+## From Author:
+
+Thanks for attention. I have lost my last changes (because I forgot to commit them) when I was changing packageName for app. So here is
+
+## KNOWN ISSUES:
+- [x] Width of the nameTextView is too small on collapsed state (fixed)
+- [ ] Haven't implemented all new buttons (just send message, call and leave)
+- [ ] Haven't tested on another devices
+- [ ] Wrong icon for Change Profile Picture in My Profile page
+- [ ] Wrong top offset of content on initial open of profile (avatar image is too big)
+- [ ] Collectible gifts are not shown
+- [ ] Maybe wrong rightMargin of nameTextView on middle state
+
+I know, that credentials must not be pushed to public repository. But I send them, to make you possible to build the project.
+
 ## Telegram messenger for Android
 
 [Telegram](https://telegram.org) is a messaging app with a focus on speed and security. It’s superfast, simple and free.
